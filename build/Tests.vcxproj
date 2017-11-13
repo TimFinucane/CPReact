@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\tests\connectionTest.cpp" />
+    <ClCompile Include="..\tests\eventTest.cpp" />
     <ClCompile Include="..\tests\observableTest.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
