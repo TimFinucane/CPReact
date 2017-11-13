@@ -28,9 +28,13 @@ namespace react::events
             {
                 return connection;
             }
-            void remove()
+            void close()
             {
-                origin.remove( connection );
+                if( connection != origin.list.end() )
+                {
+                    origin.remove( connection );
+                    connection = origin.list.end();
+                }
             }
 
         private:
@@ -72,12 +76,12 @@ namespace react::events
     };
 
     /*
-    * An auto connection will sever it's connection when
-    * it is destroyed. It is not used by default but can be
-    * created by:
-    *  AutoConnection con = EventNotifier.add( Listener );
-    * If the connection is severed before this closes, nothing happens
-    */
+     * An auto connection will sever it's connection when
+     * it is destroyed. It is not used by default but can be
+     * created by:
+     *  AutoConnection con = EventNotifier.add( Listener );
+     * If the connection is severed before this closes, nothing happens
+     */
     template <typename... Args>
     class AutoConnection
     {
@@ -89,7 +93,13 @@ namespace react::events
         }
         ~AutoConnection()
         {
-            info.remove();
+            info.close();
+        }
+
+        // Close the connection early
+        void close()
+        {
+            info.close();
         }
 
     private:

@@ -76,4 +76,21 @@ public:
 
         Assert::AreEqual( 8, a );
     }
+
+    TEST_METHOD( earlyClose )
+    {
+        int closed = 0;
+
+        EventNotifier<> notifier;
+
+        {
+            AutoConnection<> con = notifier.add( [](){}, [&](){ closed++; } );
+
+            con.close();
+
+            Assert::AreEqual( 1, closed );
+        }
+
+        Assert::AreEqual( 1, closed ); // Ensure doesnt close twice
+    }
 };

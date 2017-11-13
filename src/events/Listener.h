@@ -50,12 +50,6 @@ namespace react::events
             callback( std::forward<ForwardReferencingArgs>( args )... );
         }
 
-        bool    operator ==( const Listener<Args...>& con ) const
-        {
-            return callback.target<void( Args... )>() == con.callback.target<void (Args...)>() && 
-                disconnecter.target<void ()>() == con.disconnecter.target<void()>();
-        }
-
     private:
         Callback        callback;
         Disconnecter    disconnecter;
