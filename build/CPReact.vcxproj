@@ -19,15 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\events\Connection.h" />
+    <ClInclude Include="..\src\events\Listener.h" />
     <ClInclude Include="..\src\events\Event.h" />
-    <ClInclude Include="..\src\Listener.h">
-      <FileType>Document</FileType>
-      <EnableModules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</EnableModules>
-      <EnableModules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</EnableModules>
-      <EnableModules Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</EnableModules>
-      <EnableModules Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</EnableModules>
-    </ClInclude>
     <ClInclude Include="..\src\Observable.h">
       <FileType>Document</FileType>
       <EnableModules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</EnableModules>

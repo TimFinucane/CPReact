@@ -5,26 +5,29 @@
 
 namespace react::events
 {
+    using Disconnecter = std::function<void()>;
+
     /*
      * A connection handles a callback for generic notification, and
      * also notifying when the 'connection' is severed.
      */
     template <typename... Args>
-    class Connection
+    class Listener
     {
-        using Callback = std::function<void( Args... )>;
-        using Disconnecter = std::function<void()>;
     public:
-        Connection( Callback&& callback )
-            : Connection( std::forward<Callback>(callback), {} )
+        using Callback = std::function<void( Args... )>;
+
+    public:
+        Listener( const Callback& callback, std::function<void()> disconnecter = {} )
+            : callback( callback ), disconnecter( std::forward<Disconnecter>( disconnecter ) )
         {
         }
-        Connection( Callback&& callback, std::function<void()> disconnecter )
+        Listener( Callback&& callback, std::function<void()> disconnecter = {} )
             : callback( std::forward<Callback>( callback ) ),
             disconnecter( std::forward<Disconnecter>( disconnecter ) )
         {
         }
-        ~Connection()
+        ~Listener()
         {
             if( disconnecter )
                 disconnecter();
@@ -33,19 +36,21 @@ namespace react::events
         /*
          * Calls the associated callback
          */
-        void    call( Args&&... args )
+        template <typename... ForwardReferencingArgs>
+        void    call( ForwardReferencingArgs&&... args )
         {
-            callback( std::forward<Args>( args )... );
+            callback( std::forward<ForwardReferencingArgs>( args )... );
         }
         /*
          * Calls the associated callback
          */
-        void    operator()( Args&&... args )
+        template <typename... ForwardReferencingArgs>
+        void    operator()( ForwardReferencingArgs&&... args )
         {
-            callback( std::forward<Args>( args )... );
+            callback( std::forward<ForwardReferencingArgs>( args )... );
         }
 
-        bool    operator ==( const Connection<Args...>& con ) const
+        bool    operator ==( const Listener<Args...>& con ) const
         {
             return callback.target<void( Args... )>() == con.callback.target<void (Args...)>() && 
                 disconnecter.target<void ()>() == con.disconnecter.target<void()>();

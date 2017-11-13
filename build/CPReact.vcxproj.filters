@@ -1,13 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="..\src\Listener.h" />
     <ClInclude Include="..\src\Reactive.h" />
     <ClInclude Include="..\src\Observable.h" />
-    <ClInclude Include="..\src\events\Connection.h">
+    <ClInclude Include="..\src\events\Event.h">
       <Filter>events</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\events\Event.h">
+    <ClInclude Include="..\src\events\Listener.h">
       <Filter>events</Filter>
     </ClInclude>
   </ItemGroup>

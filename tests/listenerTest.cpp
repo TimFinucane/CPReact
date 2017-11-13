@@ -1,15 +1,15 @@
 #include "CppUnitTest.h"
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-#include "events/Connection.h"
+#include "events/Listener.h"
 using namespace react::events;
 
-TEST_CLASS( ConnectionTest )
+TEST_CLASS( ListenerTest )
 {
 public:
     TEST_METHOD( createNormal )
     {
-        Connection<> con( [](){} ); // Normal use
+        Listener<> con( [](){} ); // Normal use
     }
 
     TEST_METHOD( createWithExitHandle )
@@ -17,7 +17,7 @@ public:
         bool closed = false;
 
         {
-            Connection<> con( [](){}, [&](){ closed = true; } );
+            Listener<> con( [](){}, [&](){ closed = true; } );
 
             Assert::IsFalse( closed );
         }

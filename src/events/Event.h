@@ -2,7 +2,7 @@
 
 #include <list>
 
-#include "Connection.h"
+#include "Listener.h"
 
 namespace react::events
 {
@@ -13,8 +13,8 @@ namespace react::events
     class EventNotifier
     {
     public:
-        using ConnectionType = Connection<Args...>;
-        using iterator = typename std::list<ConnectionType>::iterator;
+        using ListenerType = Listener<Args...>;
+        using iterator = typename std::list<ListenerType>::iterator;
 
         struct ConnectionInfo
         {
@@ -53,10 +53,11 @@ namespace react::events
             list.erase( it );
         }
 
-        void            emit( Args&&... args )
+        template <typename... MethodArgsUsedForForwardingReference>
+        void            notify( MethodArgsUsedForForwardingReference&&... args )
         {
             for( auto& con : list )
-                con( std::forward<Args>( args )... );
+                con( std::forward<MethodArgsUsedForForwardingReference>( args )... );
         }
 
         // This is to ensure the ConnectionInfo is never compromised
@@ -67,14 +68,14 @@ namespace react::events
         const EventNotifier& operator =( const EventNotifier& ) = delete;
 
     private:
-        std::list<ConnectionType> list;
+        std::list<ListenerType> list;
     };
 
     /*
     * An auto connection will sever it's connection when
     * it is destroyed. It is not used by default but can be
     * created by:
-    *  AutoConnection con = EventNotifier.add( Connection );
+    *  AutoConnection con = EventNotifier.add( Listener );
     * If the connection is severed before this closes, nothing happens
     */
     template <typename... Args>

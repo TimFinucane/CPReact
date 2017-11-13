@@ -61,4 +61,24 @@ public:
         Assert::AreEqual( 0, val );
         Assert::AreEqual( 2, times );
     }
+
+    TEST_METHOD( observeValueMultipleWithRemoval )
+    {
+        int val = 0;
+
+        Observable<int> a = 3;
+
+        auto aCon = a.addListener( [&]( int prev, int next ){ val += 1; } );
+        a.addListener( [&]( int prev, int next ){ val += 2; } );
+        
+        a = 5;
+
+        Assert::AreEqual( 3, val );
+
+        a.removeListener( aCon );
+
+        a = 3;
+
+        Assert::AreEqual( 5, val );
+    }
 };

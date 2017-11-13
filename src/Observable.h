@@ -2,17 +2,22 @@
 
 #include <vector>
 
-#include "Listener.h"
+#include "events/Event.h"
 
 namespace react
 {
+    using ChangeObserver = void ();
+
     /*
      * A reactive is an object of the given Type
      * for which modifications can be listened to.
      */
     template <typename Type>
-    class Observable : public ChangeObservable
+    class Observable
     {
+        using ChangeNotifier = events::EventNotifier<>;
+        using ValueNotifier = events::EventNotifier<Type, Type>;
+
     public:
         /*
          * Creates the object through its default constructor
@@ -34,14 +39,14 @@ namespace react
          */
         void    set( Type&& newValue )
         {
-            Type temp{ std::forward<Type>(object) };
-            object = std::forward<Type>(newValue);
+            Type temp{ std::forward<Type>( object ) };
+            object = std::forward<Type>( newValue );
 
             // We do this after as otherwise any changelistener calling get will get an old value,
-            notifyChange();
+            change.notify();
 
             // We do this after as it follows the convention set by Reactive<>, the explanation for which will come later
-            notifyValue( temp, object );
+            valueChange.notify( temp, object );
         }
 
         /*
@@ -66,29 +71,31 @@ namespace react
             return get();
         }
 
-        using ChangeObservable::addListener;
-        using ChangeObservable::removeListener;
-        void    addListener( const ValueListener<Type>& listener )
-        {
-            if( !listener )
-                throw;  // TODO: Something
+        /*
+         * Read EventNotifier::add and ::remove to see more
+         */
 
-            valueListeners.emplace_back( listener );
-        }
-        void    removeListener( const ValueListener<Type>& listener )
+        auto    addListener( const typename ChangeNotifier::ListenerType::Callback&& callback, events::Disconnecter disconnector = {} )
         {
-            std::remove_if( valueListeners.begin(), valueListeners.end(), 
-                            [&]( const ValueListener<Type>& element ){ return element.type() == listener.type(); } )
+            return change.add( callback, disconnector );
+        }
+        void    removeListener( const typename ChangeNotifier::iterator it )
+        {
+            valueChange.remove( it );
+        }
+
+        auto    addListener( const typename ValueNotifier::ListenerType::Callback&& callback, events::Disconnecter disconnector = {} )
+        {
+            return valueChange.add( callback, disconnector );
+        }
+        void    removeListener( const typename ValueNotifier::iterator it )
+        {
+            valueChange.remove( it );
         }
 
     protected:
-        void    notifyValue( const Type& oldValue, const Type& newValue )
-        {
-            for( ValueListener<Type> listener : valueListeners )
-                listener( oldValue, newValue );
-        }
-
-        std::vector<ValueListener<Type>>    valueListeners;
+        ChangeNotifier  change;
+        ValueNotifier   valueChange;
 
     private:
         Type object;

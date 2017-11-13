@@ -54,7 +54,7 @@ public:
         Assert::IsTrue( closed );
     }
 
-    TEST_METHOD( emitWithRemoves )
+    TEST_METHOD( notifyWithRemoves )
     {
         int a{};
 
@@ -63,16 +63,16 @@ public:
         auto conA = notifier.add( [&](){ a += 1; } );
         notifier.add( [&](){ a += 2; } );
 
-        notifier.emit();
+        notifier.notify();
 
         Assert::AreEqual( 3, a );
 
-        notifier.emit();
+        notifier.notify();
 
         Assert::AreEqual( 6, a );
 
         notifier.remove( conA );
-        notifier.emit();
+        notifier.notify();
 
         Assert::AreEqual( 8, a );
     }
