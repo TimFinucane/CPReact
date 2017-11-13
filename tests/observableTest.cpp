@@ -1,8 +1,8 @@
-#include "Observable.h"
 #include "CppUnitTest.h"
-
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-using namespace React;
+
+#include "Observable.h"
+using namespace react;
 
 TEST_CLASS( ObservableTest )
 {

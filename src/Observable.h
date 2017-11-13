@@ -4,7 +4,7 @@
 
 #include "Listener.h"
 
-namespace React
+namespace react
 {
     /*
      * A reactive is an object of the given Type

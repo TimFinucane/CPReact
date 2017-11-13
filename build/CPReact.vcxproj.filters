@@ -4,5 +4,16 @@
     <ClInclude Include="..\src\Listener.h" />
     <ClInclude Include="..\src\Reactive.h" />
     <ClInclude Include="..\src\Observable.h" />
+    <ClInclude Include="..\src\events\Connection.h">
+      <Filter>events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\events\Event.h">
+      <Filter>events</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="events">
+      <UniqueIdentifier>{ebdda509-2c3f-42f6-8887-c454a10743ba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

@@ -3,7 +3,7 @@
 #include <functional>
 #include <algorithm>
 
-namespace React
+namespace react
 {
 	/*
      * Notified when an object changes only

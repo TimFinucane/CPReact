@@ -2,7 +2,7 @@
 
 #include "Observable.h"
 
-namespace React
+namespace react
 {
     template <typename Type>
     class Reactive : public Listenable<Type>
