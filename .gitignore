@@ -1,0 +1,7 @@
+# Build files:
+build/*
+!build/*.sln
+!build/*.vcxproj*
+
+# And the bin
+bin/
