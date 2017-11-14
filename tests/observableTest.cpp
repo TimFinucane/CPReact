@@ -68,14 +68,14 @@ public:
 
         Observable<int> a = 3;
 
-        auto aCon = a.addListener( [&]( int prev, int next ){ val += 1; } );
-        a.addListener( [&]( int prev, int next ){ val += 2; } );
+        auto aCon = a.addListener( [&]( int, int ){ val += 1; } );
+        a.addListener( [&]( int, int ){ val += 2; } );
         
         a = 5;
 
         Assert::AreEqual( 3, val );
 
-        a.removeListener( aCon );
+        aCon.close();
 
         a = 3;
 

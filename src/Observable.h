@@ -7,6 +7,7 @@
 namespace react
 {
     using ChangeObserver = void ();
+    using ChangeNotifier = events::EventNotifier<>;
 
     /*
      * A reactive is an object of the given Type
@@ -15,7 +16,6 @@ namespace react
     template <typename Type>
     class Observable
     {
-        using ChangeNotifier = events::EventNotifier<>;
         using ValueNotifier = events::EventNotifier<Type, Type>;
 
     public:
@@ -75,22 +75,13 @@ namespace react
          * Read EventNotifier::add and ::close to see more
          */
 
-        auto    addListener( const typename ChangeNotifier::ListenerType::Callback&& callback, events::Disconnecter disconnector = {} )
+        auto    addListener( const typename ChangeNotifier::ListenerType::Callback& callback, events::Disconnecter disconnector = {} )
         {
             return change.add( callback, disconnector );
         }
-        void    removeListener( const typename ChangeNotifier::iterator it )
-        {
-            valueChange.remove( it );
-        }
-
-        auto    addListener( const typename ValueNotifier::ListenerType::Callback&& callback, events::Disconnecter disconnector = {} )
+        auto    addListener( const typename ValueNotifier::ListenerType::Callback& callback, events::Disconnecter disconnector = {} )
         {
             return valueChange.add( callback, disconnector );
-        }
-        void    removeListener( const typename ValueNotifier::iterator it )
-        {
-            valueChange.remove( it );
         }
 
     protected:

@@ -36,7 +36,7 @@ public:
         EventNotifier<> notifier;
         auto con = notifier.add( [](){}, [&](){ closed = true; } );
 
-        notifier.remove( con );
+        con.close();
 
         Assert::IsTrue( closed );
     }
@@ -71,7 +71,7 @@ public:
 
         Assert::AreEqual( 6, a );
 
-        notifier.remove( conA );
+        conA.close();
         notifier.notify();
 
         Assert::AreEqual( 8, a );

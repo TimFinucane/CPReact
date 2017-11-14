@@ -19,27 +19,35 @@ namespace react::events
         struct ConnectionInfo
         {
         public:
-            ConnectionInfo( EventNotifier& origin, const iterator& connection )
-                : origin( origin ), connection( connection )
+            ConnectionInfo( EventNotifier& origin, std::shared_ptr<ListenerType>& listenerRef )
+                : origin( origin ), ptr( listenerRef )
             {
             }
 
-            operator const iterator&() const
-            {
-                return connection;
-            }
+            /*
+             * Removes the listener this connection info refers to from the list
+             */
             void close()
             {
-                if( connection != origin.list.end() )
+                if( !ptr.expired() )
                 {
-                    origin.remove( connection );
-                    connection = origin.list.end();
+                    for( auto it = origin.list.begin(), end = origin.list.end(); it != end; it++  )
+                    {
+                        if( !ptr.owner_before( *it ) && !(*it).owner_before( ptr ) )
+                        {
+                            // Swap and pop
+                            std::iter_swap( it, origin.list.end() - 1 );
+                            origin.list.pop_back();
+                            break;
+                        }
+                    }
                 }
+                // ptr should be expired here
             }
 
         private:
-            EventNotifier&  origin;
-            iterator        connection;
+            EventNotifier&              origin;
+            std::weak_ptr<ListenerType> ptr;
         };
 
     public:
@@ -48,20 +56,14 @@ namespace react::events
         template <typename... MethodArgs>
         ConnectionInfo  add( MethodArgs&&... args )
         {
-            list.emplace_front( std::forward<MethodArgs>( args )... );
-
-            return ConnectionInfo( *this, list.begin() );
-        }
-        void            remove( const iterator& it )
-        {
-            list.erase( it );
+            return ConnectionInfo( *this, list.emplace_back( std::make_shared<ListenerType>( std::forward<MethodArgs>( args )... ) ) );
         }
 
         template <typename... MethodArgsUsedForForwardingReference>
         void            notify( MethodArgsUsedForForwardingReference&&... args )
         {
             for( auto& con : list )
-                con( std::forward<MethodArgsUsedForForwardingReference>( args )... );
+                (*con)( std::forward<MethodArgsUsedForForwardingReference>( args )... );
         }
 
         // This is to ensure the ConnectionInfo is never compromised
@@ -72,7 +74,7 @@ namespace react::events
         const EventNotifier& operator =( const EventNotifier& ) = delete;
 
     private:
-        std::list<ListenerType> list;
+        std::vector<std::shared_ptr<ListenerType>>  list;
     };
 
     /*
@@ -95,6 +97,9 @@ namespace react::events
         {
             info.close();
         }
+
+        AutoConnection( const AutoConnection& ) = delete;
+        AutoConnection& operator =( const AutoConnection& ) = delete;
 
         // Close the connection early
         void close()
