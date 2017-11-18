@@ -72,9 +72,8 @@ namespace react
         }
 
         /*
-         * Read EventNotifier::add and ::close to see more
+         * Read EventNotifier::add to see more
          */
-
         auto    addListener( const typename ChangeNotifier::ListenerType::Callback& callback, events::Disconnecter disconnector = {} )
         {
             return change.add( callback, disconnector );

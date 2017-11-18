@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\Binding.h" />
     <ClInclude Include="..\src\events\Listener.h" />
     <ClInclude Include="..\src\events\Event.h" />
     <ClInclude Include="..\src\Observable.h">
