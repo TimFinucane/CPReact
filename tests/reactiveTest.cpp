@@ -58,4 +58,23 @@ TEST_CLASS( reactiveTest )
 
         Assert::AreEqual( 7, c.get() );
     }
+
+    TEST_METHOD( unbinding )
+    {
+        Reactive<int>* a = new Reactive<int>(2);
+
+        Reactive<int> b;
+        b.bind( []( int val ){ return val + 1; }, *a );
+
+        Reactive<int> c;
+        c.bind( []( int val ){ return val + 2; }, b );
+
+        Assert::AreEqual( 5, c.get() );
+
+        *a = 4;
+
+        delete a;
+
+        Assert::AreEqual( 7, c.get() );
+    }
 };

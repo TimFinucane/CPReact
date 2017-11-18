@@ -14,15 +14,15 @@ namespace react
     {
     public:
         Reactive()
-            : Observable<Type>(), binding( [&](){ valid = false; } )
+            : Observable<Type>(), binding( [&](){ invalidate(); }, [&](){ update(); } )
         {
         }
         Reactive( const Type& type )
-            : Observable<Type>( type ), binding( [&](){ valid = false; } )
+            : Observable<Type>( type ), binding( [&](){ invalidate(); }, [&](){ update(); } )
         {
         }
         Reactive( Type&& type )
-            : Observable<Type>( std::move( type ) ), binding( [&](){ valid = false; } )
+            : Observable<Type>( std::move( type ) ), binding( [&](){ invalidate(); }, [&](){ update(); } )
         {
         }
         ~Reactive()
@@ -55,7 +55,7 @@ namespace react
         const Type& get()
         {
             if( !valid )
-                set( binding() );
+                update();
 
             return Observable<Type>::get();
         }
@@ -64,6 +64,21 @@ namespace react
         using Observable::operator const Type &;
 
     private:
+        void    update()
+        {
+            Type temp{ std::forward<Type>( object ) };
+            object = std::forward<Type>( binding() );
+
+            valid = true;
+
+            valueChange.notify( temp, object );
+        }
+        void    invalidate()
+        {
+            valid = false;
+            change.notify();
+        }
+
         Binding<Type>       binding;
 
         bool                valid = true;

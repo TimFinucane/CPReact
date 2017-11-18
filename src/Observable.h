@@ -23,7 +23,7 @@ namespace react
          * Creates the object through its default constructor
          */
         Observable()
-            : object{}
+            : object{}, change{}, valueChange{} // Ensure object is destroyed last
         {
         }
         /*
@@ -42,11 +42,7 @@ namespace react
             Type temp{ std::forward<Type>( object ) };
             object = std::forward<Type>( newValue );
 
-            // We do this after as otherwise any changelistener calling get will get an old value,
-            change.notify();
-
-            // We do this after as it follows the convention set by Reactive<>, the explanation for which will come later
-            valueChange.notify( temp, object );
+            updatedValue( temp, object );
         }
 
         /*
@@ -84,10 +80,21 @@ namespace react
         }
 
     protected:
+        /*
+         * Informs of an updated value
+         */
+        void updatedValue( const Type& prev, const Type& next )
+        {
+            // We do this after in Observable as otherwise any changelistener calling get will get an old value
+            change.notify();
+
+            // We do this after as it follows the convention set by Reactive<>, the explanation for which will come later
+            valueChange.notify( prev, next );
+        }
+
         ChangeNotifier  change;
         ValueNotifier   valueChange;
 
-    private:
         Type object;
     };
 }
