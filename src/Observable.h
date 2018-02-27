@@ -53,7 +53,7 @@ namespace react
         /*
          * Gets the value of the object as a constant (so it may not change)
          */
-        virtual const Type& get()
+        virtual const Type& get() const
         {
             return object;
         }

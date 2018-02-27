@@ -35,11 +35,11 @@ TEST_CLASS( reactiveTest )
 
         copy.bind( []( int val ){ return val; }, a );
 
-        Assert::AreEqual( 2, copy.get() );
+        Assert::AreEqual( 2, (int)copy );
 
         a = 5;
 
-        Assert::AreEqual( 5, copy.get() );
+        Assert::AreEqual( 5, (int)copy );
     }
 
     TEST_METHOD( reactiveChain )

@@ -67,10 +67,10 @@ namespace react
             binding.clear();
         }
 
-        const Type& get()
+        virtual const Type& get() const
         {
             if( !valid )
-                update();
+                const_cast<Reactive<Type>*>(this)->update();
 
             return Observable<Type>::get();
         }
