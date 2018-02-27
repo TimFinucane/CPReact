@@ -16,9 +16,12 @@ namespace react
         using Connection = events::AutoConnection<>;
     public:
         ConnectionArray( const std::function<ChangeObserver>& onChange, const std::function<void()>& onClose = {} )
-            : onChange( onChange ), count( 0 ), connections( nullptr ), onClose( onClose )
+            : count( 0 ), connections( nullptr ), onChange( onChange ), onClose( onClose )
         {
         }
+        ConnectionArray()
+            : ConnectionArray( {}, {} )
+        {}
         ~ConnectionArray()
         {
             clear();
@@ -53,6 +56,8 @@ namespace react
             }
         }
 
+        std::function<ChangeObserver>   onChange;
+        std::function<void()>           onClose; // From what i understand, these functions are allowed to destroy themselves
     private:
         template <typename Arg, typename... Args>
         void        bindListeners( int i, Observable<Arg>& listenable, Observable<Args>&... listenables )
@@ -64,12 +69,8 @@ namespace react
         template <typename T = void>
         void        bindListeners( int ) {}
 
-        std::function<ChangeObserver>   onChange;
-
         Connection* connections;
         size_t      count;
-
-        std::function<void()>   onClose; // From what i understand, these functions are allowed to destroy themselves
     };
 
     template <typename Type>
