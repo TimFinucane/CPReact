@@ -77,4 +77,50 @@ TEST_CLASS( reactiveTest )
 
         Assert::AreEqual( 7, c.get() );
     }
+
+    TEST_METHOD( tryChangeBound )
+    {
+        Reactive<int> a = 2;
+        Reactive<int> b = 3;
+
+        Reactive<int> c;
+        c.bind( []( int first, int second ) { return first + second; }, a, b );
+
+        try
+        {
+            c = 4;
+        }
+        catch ( react::AlreadyBoundException& )
+        {
+            Assert::AreEqual( 5, (int)c );
+            return;
+        }
+        Assert::Fail( L"AssignmentToBoundException was not thrown when assigning to a bound variable" );
+    }
+
+    TEST_METHOD( simplePrettyBind )
+    {
+        Observable<int> a = 2;
+
+        Reactive<int> copy = a;
+
+        a = 4;
+        Assert::AreEqual( 4, (int)copy );
+    }
+
+    /*
+     * This test method highlights the simplified language that react should support
+     *//*
+    TEST_METHOD( simpleHypotEquation )
+    {
+        Reactive<int> opposite = 2;
+        Reactive<int> adjacent = 5;
+
+        // Auto should default to reactive
+        auto hypotenuseSq = (opposite * opposite) + (adjacent * adjacent);
+
+        opposite += 3;
+
+        Assert::AreEqual( 50, hypotenuseSq );
+    }*/
 };

@@ -33,9 +33,14 @@ namespace react
             clear();
 
             count = sizeof...(Args);
-            connections = static_cast<Connection*>(::operator new(sizeof( Connection ) * count));
+            if (count == 0)
+                connections = nullptr;
+            else
+            {
+                connections = static_cast<Connection*>(::operator new(sizeof( Connection ) * count));
 
-            bindListeners( 0, listenables... );
+                bindListeners( 0, listenables... );
+            }
         }
         void clear()
         {
@@ -93,6 +98,19 @@ namespace react
         {
             response = [binder, &inputs...]() -> Out{ return binder( inputs.get()... ); };
             connections.reset( inputs... );
+        }
+        void reset()
+        {
+            response = {};
+            connections.reset();
+        }
+
+        /*
+         * Whether or not the connection is active
+         */
+        operator bool()
+        {
+            return (bool)response;
         }
 
         void clear()

@@ -26,11 +26,16 @@ namespace react
             : object{}, change{}, valueChange{} // Ensure object is destroyed last
         {
         }
+
+        Observable( const Type& object )
+            : object( object ), change{}, valueChange{}
+        {
+        }
         /*
          * Creates the object through the supplied instance
          */
         Observable( Type&& object )
-            : object( std::forward<Type>( object ) )
+            : object( std::forward<Type>( object ) ), change{}, valueChange{}
         {
         }
 
@@ -56,10 +61,11 @@ namespace react
         /*
          * Sets the object to the new value and sends notifications
          */
-        const Type& operator =( Type&& newValue )
+        template <typename StandIn>
+        const Observable& operator =( StandIn&& newValue )
         {
-            set( std::forward<Type>( newValue ) );
-            return get();
+            set( std::forward<StandIn>( newValue ) );
+            return *this;
         }
 
         operator const Type&()

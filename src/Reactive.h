@@ -5,6 +5,15 @@
 
 namespace react
 {
+    // TODO: Proper debugging info.
+    class AlreadyBoundException : public std::exception
+    {
+    public:
+        AlreadyBoundException()
+            : std::exception( "Tried to assign a value to a reactive variable that has already been bound" )
+        {}
+    };
+
     /*
      * A reactive is an observable variable that can also be bound
      * to other observables, so that whenever it's dependants change, it does too.
@@ -22,7 +31,7 @@ namespace react
         {
         }
         Reactive( Type&& type )
-            : Observable<Type>( std::move( type ) ), binding( [&](){ invalidate(); }, [&](){ update(); } )
+            : Observable<Type>( std::forward<Type>( type ) ), binding( [&](){ invalidate(); }, [&](){ update(); } )
         {
         }
         ~Reactive()
@@ -43,11 +52,11 @@ namespace react
         }
 
         /*
-         * Removes the binding relationship. The reactive value will left at the most recently set value.
+         * Removes the binding relationship. The reactive value will be left at the most recently set value.
          */
         void    unbind()
         {
-            get(); // Ensure we have latest value
+            get(); // Ensure we have latest value. This helps ensure a well defined behaviour.
 
             binding.clear();
         }
@@ -60,7 +69,16 @@ namespace react
             return Observable<Type>::get();
         }
 
-        using Observable::operator=;
+        template <typename StandIn>
+        const Reactive& operator =( StandIn&& newValue )
+        {
+            if( binding )
+                throw AlreadyBoundException();
+
+            set( std::forward<StandIn>( newValue ) );
+            return *this;
+        }
+
         using Observable::operator const Type &;
 
     private:
