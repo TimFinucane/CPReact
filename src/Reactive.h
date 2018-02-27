@@ -34,6 +34,12 @@ namespace react
             : Observable<Type>( std::forward<Type>( type ) ), binding( [&](){ invalidate(); }, [&](){ update(); } )
         {
         }
+        template <typename SimilarType>
+        Reactive( Observable<SimilarType>& observable )
+            : Reactive()
+        {
+            bind( []( SimilarType input ) { return (Type)input; }, observable );
+        }
         ~Reactive()
         {
             binding.clear();
