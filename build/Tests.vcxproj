@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\tests\constantTest.cpp" />
     <ClCompile Include="..\tests\listenerTest.cpp" />
     <ClCompile Include="..\tests\eventTest.cpp" />
-    <ClCompile Include="..\tests\observableTest.cpp" />
     <ClCompile Include="..\tests\reactiveTest.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

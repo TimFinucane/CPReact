@@ -132,4 +132,5 @@ namespace react
         std::function<Out()>    response;
         ConnectionArray         connections;
     };
+
 }

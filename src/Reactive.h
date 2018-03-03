@@ -23,15 +23,15 @@ namespace react
     {
     public:
         Reactive()
-            : Observable<Type>(), binding( [&](){ invalidate(); }, [&](){ update(); } )
+            : value{}, binding( [&]() { invalidate(); }, [&]() { update(); } )
         {
         }
         Reactive( const Type& type )
-            : Observable<Type>( type ), binding( [&](){ invalidate(); }, [&](){ update(); } )
+            : value( type ), binding( [&](){ invalidate(); }, [&](){ update(); } )
         {
         }
         Reactive( Type&& type )
-            : Observable<Type>( std::forward<Type>( type ) ), binding( [&](){ invalidate(); }, [&](){ update(); } )
+            : value( std::forward<Type>( type ) ), binding( [&](){ invalidate(); }, [&](){ update(); } )
         {
         }
         template <typename SimilarType>
@@ -67,20 +67,32 @@ namespace react
             binding.clear();
         }
 
-        virtual const Type& get() const
+        template <typename StandIn>
+        void set( StandIn&& standin )
+        {
+            if( binding )
+                throw AlreadyBoundException();
+
+            // This way we retain the old value, but ensure the new value is
+            // contained in the class
+            Type temp = std::forward<StandIn>( standin );
+            std::swap( value, temp );
+
+            change.notify();
+            valueChange.notify( temp, value );
+        }
+
+        const Type& get() const
         {
             if( !valid )
                 const_cast<Reactive<Type>*>(this)->update();
 
-            return Observable<Type>::get();
+            return value;
         }
 
         template <typename StandIn>
         const Reactive& operator =( StandIn&& newValue )
         {
-            if( binding )
-                throw AlreadyBoundException();
-
             set( std::forward<StandIn>( newValue ) );
             return *this;
         }
@@ -90,12 +102,14 @@ namespace react
     private:
         void    update()
         {
-            Type temp{ std::forward<Type>( object ) };
-            object = std::forward<Type>( binding() );
+            // This way we retain the old value, but ensure the new value is
+            // contained in the class
+            Type temp = binding();
+            std::swap( value, temp );
 
             valid = true;
 
-            valueChange.notify( temp, object );
+            valueChange.notify( temp, value );
         }
         void    invalidate()
         {
@@ -105,6 +119,7 @@ namespace react
 
         Binding<Type>       binding;
 
-        bool                valid = true;
+        mutable bool        valid = true;
+        mutable Type        value;
     };
 }

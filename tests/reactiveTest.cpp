@@ -1,6 +1,7 @@
 #include "CppUnitTest.h"
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
+#include "Constant.h"
 #include "Reactive.h"
 using namespace react;
 
@@ -8,7 +9,7 @@ TEST_CLASS( reactiveTest )
 {
     TEST_METHOD( createBinding )
     {
-        Observable<int> a = 2;
+        Constant<int> a = 2;
 
         Reactive<int> copy;
 
@@ -17,7 +18,7 @@ TEST_CLASS( reactiveTest )
 
     TEST_METHOD( bindingPrematureDeletion )
     { // :) I made this work :)
-        Observable<int>* a = new Observable<int>{ 2 };
+        Observable<int>* a = new Constant<int>{ 2 };
 
         Reactive<int> copy;
 
@@ -29,7 +30,7 @@ TEST_CLASS( reactiveTest )
 
     TEST_METHOD( bindSimple )
     {
-        Observable<int> a = 2;
+        Constant<int> a = 2;
 
         Reactive<int> copy;
 
@@ -73,8 +74,10 @@ TEST_CLASS( reactiveTest )
 
         *a = 4;
 
+        // When a is deleted, b should recognize this and update to the latest value before severing connection
         delete a;
 
+        // Therefore even though a is gone at this point, c will be the correct expected value
         Assert::AreEqual( 7, c.get() );
     }
 
@@ -100,7 +103,7 @@ TEST_CLASS( reactiveTest )
 
     TEST_METHOD( simplePrettyBind )
     {
-        Observable<int> a = 2;
+        Constant<int> a = 2;
 
         Reactive<int> copy = a;
 

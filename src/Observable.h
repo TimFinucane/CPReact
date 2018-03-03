@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "Operation.h"
 #include "events/Event.h"
 
 namespace react
@@ -10,8 +11,9 @@ namespace react
     using ChangeNotifier = events::EventNotifier<>;
 
     /*
-     * A reactive is an object of the given Type
-     * for which modifications can be listened to.
+     * An observable is an abstact class defining the interface
+     * for being able to observe changes in a value, but contains
+     * no functionality for setting that value.
      */
     template <typename Type>
     class Observable
@@ -19,44 +21,11 @@ namespace react
         using ValueNotifier = events::EventNotifier<Type, Type>;
 
     public:
-        /*
-         * Creates the object through its default constructor
-         */
-        Observable()
-            : object{}, change{}, valueChange{} // Ensure object is destroyed last
-        {
-        }
-
-        Observable( const Type& object )
-            : object( object ), change{}, valueChange{}
-        {
-        }
-        /*
-         * Creates the object through the supplied instance
-         */
-        Observable( Type&& object )
-            : object( std::forward<Type>( object ) ), change{}, valueChange{}
-        {
-        }
-
-        /*
-         * Sets the object to the new value and sends notifications
-         */
-        void    set( Type&& newValue )
-        {
-            Type temp{ std::forward<Type>( object ) };
-            object = std::forward<Type>( newValue );
-
-            updatedValue( temp, object );
-        }
 
         /*
          * Gets the value of the object as a constant (so it may not change)
          */
-        virtual const Type& get() const
-        {
-            return object;
-        }
+        virtual const Type& get() const = 0;
 
         /*
          * Sets the object to the new value and sends notifications
@@ -100,7 +69,5 @@ namespace react
 
         ChangeNotifier  change;
         ValueNotifier   valueChange;
-
-        Type object;
     };
 }

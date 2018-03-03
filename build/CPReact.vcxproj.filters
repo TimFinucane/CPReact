@@ -10,6 +10,8 @@
       <Filter>events</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Binding.h" />
+    <ClInclude Include="..\src\Operation.h" />
+    <ClInclude Include="..\src\Constant.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="events">

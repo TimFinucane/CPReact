@@ -1,21 +1,21 @@
 #include "CppUnitTest.h"
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-#include "Observable.h"
+#include "Constant.h"
 using namespace react;
 
-TEST_CLASS( ObservableTest )
+TEST_CLASS( ConstantTest )
 {
 public:
     TEST_METHOD( creation )
     {
-        Observable<int> a = 3;
-        Observable<int> b{ 4 };
+        Constant<int> a = 3;
+        Constant<int> b{ 4 };
     }
 
     TEST_METHOD( setAndGet )
     {
-        Observable<int> a = 3;
+        Constant<int> a = 3;
 
         a.set( 5 );
 
@@ -26,7 +26,7 @@ public:
     {
         bool changed = 0;
 
-        Observable<int> a = 3;
+        Constant<int> a = 3;
 
         a.addListener( [&](){ changed = true; } );
 
@@ -42,7 +42,7 @@ public:
         int val = 0;
         int times = 0;
 
-        Observable<int> a = 3;
+        Constant<int> a = 3;
 
         a.addListener( 
             [&]( int prev, int next )
@@ -66,7 +66,7 @@ public:
     {
         int val = 0;
 
-        Observable<int> a = 3;
+        Constant<int> a = 3;
 
         auto aCon = a.addListener( [&]( int, int ){ val += 1; } );
         a.addListener( [&]( int, int ){ val += 2; } );
