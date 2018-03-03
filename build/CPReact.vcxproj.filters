@@ -9,9 +9,9 @@
     <ClInclude Include="..\src\events\Listener.h">
       <Filter>events</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Constant.h" />
     <ClInclude Include="..\src\Binding.h" />
     <ClInclude Include="..\src\Operation.h" />
-    <ClInclude Include="..\src\Constant.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="events">

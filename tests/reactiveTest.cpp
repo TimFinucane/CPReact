@@ -5,7 +5,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 #include "Reactive.h"
 using namespace react;
 
-TEST_CLASS( reactiveTest )
+TEST_CLASS( ReactiveTest )
 {
     TEST_METHOD( createBinding )
     {
@@ -110,20 +110,4 @@ TEST_CLASS( reactiveTest )
         a = 4;
         Assert::AreEqual( 4, (int)copy );
     }
-
-    /*
-     * This test method highlights the simplified language that react should support
-     *//*
-    TEST_METHOD( simpleHypotEquation )
-    {
-        Reactive<int> opposite = 2;
-        Reactive<int> adjacent = 5;
-
-        // Auto should default to reactive
-        auto hypotenuseSq = (opposite * opposite) + (adjacent * adjacent);
-
-        opposite += 3;
-
-        Assert::AreEqual( 50, hypotenuseSq );
-    }*/
 };

@@ -2,12 +2,11 @@
 
 #include <vector>
 
-#include "Operation.h"
 #include "events/Event.h"
 
 namespace react
 {
-    using ChangeObserver = void ();
+    using ChangeObserver = void();
     using ChangeNotifier = events::EventNotifier<>;
 
     /*
@@ -18,10 +17,13 @@ namespace react
     template <typename Type>
     class Observable
     {
+    public:
+        using value_type = Type;
+
+    private:
         using ValueNotifier = events::EventNotifier<Type, Type>;
 
     public:
-
         /*
          * Gets the value of the object as a constant (so it may not change)
          */
