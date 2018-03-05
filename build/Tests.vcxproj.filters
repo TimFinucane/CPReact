@@ -5,6 +5,6 @@
     <ClCompile Include="..\tests\listenerTest.cpp" />
     <ClCompile Include="..\tests\constantTest.cpp" />
     <ClCompile Include="..\tests\reactiveTest.cpp" />
-    <ClCompile Include="operationTest.cpp" />
+    <ClCompile Include="..\tests\operationTest.cpp" />
   </ItemGroup>
 </Project>

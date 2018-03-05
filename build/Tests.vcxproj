@@ -22,15 +22,15 @@
     <ClCompile Include="..\tests\constantTest.cpp" />
     <ClCompile Include="..\tests\listenerTest.cpp" />
     <ClCompile Include="..\tests\eventTest.cpp" />
+    <ClCompile Include="..\tests\operationTest.cpp" />
     <ClCompile Include="..\tests\reactiveTest.cpp" />
-    <ClCompile Include="operationTest.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{A846ABC4-E31B-43F9-A31E-4B46EAA3B06A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Tests</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
     <ProjectSubType>NativeUnitTestProject</ProjectSubType>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
