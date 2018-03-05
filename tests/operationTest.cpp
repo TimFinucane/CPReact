@@ -3,7 +3,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 #include <cmath>
 
-#include "Operation.h"
+#include "bindings/Operation.h"
 #include "Constant.h"
 using namespace react;
 
@@ -20,7 +20,7 @@ TEST_CLASS( OperationTest )
 
         opposite = 5;
 
-        Assert::AreEqual( 50, (int)hypotenuseSquared );
+        Assert::AreEqual( 50, hypotenuseSquared() );
     }
 
     TEST_METHOD( simpleExternalFunction )

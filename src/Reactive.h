@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Observable.h"
-#include "Binding.h"
+#include "bindings/Binding.h"
 
 namespace react
 {
@@ -97,7 +97,7 @@ namespace react
             return *this;
         }
 
-        using Observable::operator const Type &;
+        //using Observable::operator const Type &;
 
     private:
         void    update()

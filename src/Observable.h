@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "events/Event.h"
+#include "bindings/Operation.h"
 
 namespace react
 {
@@ -15,19 +16,12 @@ namespace react
      * no functionality for setting that value.
      */
     template <typename Type>
-    class Observable
+    class Observable : public Bindable<Type>
     {
-    public:
-        using value_type = Type;
-
     private:
         using ValueNotifier = events::EventNotifier<Type, Type>;
 
     public:
-        /*
-         * Gets the value of the object as a constant (so it may not change)
-         */
-        virtual const Type& get() const = 0;
 
         /*
          * Sets the object to the new value and sends notifications
@@ -39,11 +33,16 @@ namespace react
             return *this;
         }
 
-        operator const Type&()
+        const Type& operator ()() const
         {
             return get();
         }
 
+        /*explicit operator const Type&()
+        {
+            return get();
+        }
+        */
         /*
          * Read EventNotifier::add to see more
          */

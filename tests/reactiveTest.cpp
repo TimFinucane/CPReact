@@ -36,11 +36,11 @@ TEST_CLASS( ReactiveTest )
 
         copy.bind( []( int val ){ return val; }, a );
 
-        Assert::AreEqual( 2, (int)copy );
+        Assert::AreEqual( 2, copy() );
 
         a = 5;
 
-        Assert::AreEqual( 5, (int)copy );
+        Assert::AreEqual( 5, copy() );
     }
 
     TEST_METHOD( reactiveChain )
@@ -95,7 +95,7 @@ TEST_CLASS( ReactiveTest )
         }
         catch ( react::AlreadyBoundException& )
         {
-            Assert::AreEqual( 5, (int)c );
+            Assert::AreEqual( 5, c() );
             return;
         }
         Assert::Fail( L"AssignmentToBoundException was not thrown when assigning to a bound variable" );
@@ -108,6 +108,6 @@ TEST_CLASS( ReactiveTest )
         Reactive<int> copy = a;
 
         a = 4;
-        Assert::AreEqual( 4, (int)copy );
+        Assert::AreEqual( 4, copy() );
     }
 };

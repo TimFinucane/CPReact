@@ -10,12 +10,19 @@
       <Filter>events</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Constant.h" />
-    <ClInclude Include="..\src\Binding.h" />
-    <ClInclude Include="..\src\Operation.h" />
+    <ClInclude Include="..\src\bindings\Operation.h">
+      <Filter>bindings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\bindings\Binding.h">
+      <Filter>bindings</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="events">
       <UniqueIdentifier>{ebdda509-2c3f-42f6-8887-c454a10743ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="bindings">
+      <UniqueIdentifier>{9f0bee41-3015-4ef0-8ab2-d6436ce3d1e1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -19,7 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\Binding.h" />
+    <ClInclude Include="..\src\bindings\Binding.h" />
+    <ClInclude Include="..\src\bindings\Operation.h" />
     <ClInclude Include="..\src\Constant.h" />
     <ClInclude Include="..\src\events\Listener.h" />
     <ClInclude Include="..\src\events\Event.h" />
@@ -30,7 +31,6 @@
       <EnableModules Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</EnableModules>
       <EnableModules Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</EnableModules>
     </ClInclude>
-    <ClInclude Include="..\src\Operation.h" />
     <ClInclude Include="..\src\Reactive.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
