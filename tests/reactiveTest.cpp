@@ -1,6 +1,8 @@
 #include "CppUnitTest.h"
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
+#include <string>
+
 #include "Constant.h"
 #include "Reactive.h"
 using namespace react;
@@ -109,5 +111,21 @@ TEST_CLASS( ReactiveTest )
 
         a = 4;
         Assert::AreEqual( 20, copy() );
+    }
+
+    TEST_METHOD( complexPrettyBind )
+    {
+        Constant<int> a = 1;
+        Constant<int> b = 1;
+
+        Reactive<int> hypot_squared = a * a + b * b;
+
+        Reactive<float> cosine = b / Operation{ &std::sqrtf, hypot_squared };
+
+        a = 3;
+        b = 4;
+
+        Assert::AreEqual( 5 * 5, hypot_squared() );
+        Assert::AreEqual( 0.8f, cosine() ); // Should even be exact precision. How lovely.
     }
 };
