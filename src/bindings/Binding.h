@@ -16,7 +16,7 @@ namespace react
         using Connection = events::AutoConnection<>;
     public:
         ConnectionArray( const std::function<ChangeObserver>& onChange, const std::function<void()>& onClose = {} )
-            : count( 0 ), connections( nullptr ), onChange( onChange ), onClose( onClose )
+            : onChange( onChange ), onClose( onClose )
         {
         }
         ConnectionArray()
@@ -31,46 +31,48 @@ namespace react
         ConnectionArray& operator =( ConnectionArray&& m ) = delete;
 
         template <typename... Args>
-        void reset( Observable<Args>&... listenables )
+        void reset( std::tuple<Observable<Args>&...>& listenables )
         {
             clear();
-
-            count = sizeof...(Args);
-            if (count == 0)
-                connections = nullptr;
-            else
-            {
-                connections = static_cast<Connection*>(::operator new(sizeof( Connection ) * count));
-
-                bindListeners( 0, listenables... );
-            }
+            clear();
+            bindListeners<0, Args...>( listenables );
         }
         void clear()
         {
-            if( count > 0 )
-            {
-                count = 0;
-                delete connections;
-                if( onClose )
-                    onClose();
-            }
+            connections.clear();
         }
 
         std::function<ChangeObserver>   onChange;
         std::function<void()>           onClose; // From what i understand, these functions are allowed to destroy themselves
     private:
-        template <typename Arg, typename... Args>
-        void        bindListeners( int i, Observable<Arg>& listenable, Observable<Args>&... listenables )
+        // Adds each of the tuple of observables to the list of listeners, whilst ensuring that no observable is listened to more
+        // than once (no repetition).
+        template <size_t item = 0, typename... Inputs>
+        std::enable_if_t<item < sizeof...(Inputs)> bindListeners( std::tuple<Observable<Inputs>&...>& observables )
         {
-            new (connections + i) Connection( listenable.addListener( onChange, [&](){ clear(); } ) );
+            if( item == 0 || !existsInTuple<item, item - 1, Inputs...>( observables ) )
+                connections.emplace_back( std::get<item>( observables ).addListener( onChange, [&](){ clear(); } ) );
 
-            bindListeners<Args...>( i + 1, listenables... );
+            bindListeners<item + 1, Inputs...>( observables );
         }
-        template <typename T = void>
-        void        bindListeners( int ) {}
+        template <size_t item, typename... Inputs>
+        std::enable_if_t<item == sizeof...(Inputs)> bindListeners( std::tuple<Observable<Inputs>&...>& ) {}
+        
+        // Used for checking if an item exists already in the given tuple
+        template <size_t item, size_t otherItem, typename... Inputs>
+        std::enable_if_t<otherItem != 0, bool> existsInTuple( std::tuple<Observable<Inputs>&...>& observables )
+        {
+            if( &std::get<item>( observables ) == &std::get<otherItem>( observables ) )
+                return true;
+            return existsInTuple<item, otherItem - 1, Inputs...>( observables );
+        }
+        template <size_t item, size_t otherItem, typename... Inputs>
+        std::enable_if_t<otherItem == 0, bool> existsInTuple( std::tuple<Observable<Inputs>&...>& )
+        {
+            return false;
+        }
 
-        Connection* connections;
-        size_t      count;
+        std::vector<Connection> connections;
     };
 
     template <typename Type>
@@ -98,7 +100,8 @@ namespace react
         void reset( Functor binder, Observable<Inputs>&... inputs )
         {
             response = [binder, &inputs...]() -> Out{ return binder( inputs.get()... ); };
-            connections.reset( inputs... );
+            auto tuple = std::forward_as_tuple<Observable<Inputs>&...>( inputs... );
+            connections.reset<Inputs...>( tuple );
         }
         void reset()
         {

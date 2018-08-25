@@ -100,6 +100,8 @@ namespace react::events
 
         AutoConnection( const AutoConnection& ) = delete;
         AutoConnection& operator =( const AutoConnection& ) = delete;
+        AutoConnection( AutoConnection&& ) = default;
+        AutoConnection& operator =( AutoConnection&& ) = default;
 
         // Close the connection early
         void close()

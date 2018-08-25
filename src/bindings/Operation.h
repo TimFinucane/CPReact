@@ -49,6 +49,14 @@ namespace react
     {
         return Operation<Functor, Inputs...>( std::move( functor ), std::move( inputs ) );
     }
+    /*
+     * Joins a tuple and another item or tuple together uniquely (results in unique tuple)
+     */
+    template <typename... Inputs, typename Input>
+    auto join_tuples( std::tuple<Inputs&...> tuple, Input& other )
+    {
+
+    }
 
     template <typename TypeA, typename TypeB, typename std::is_convertible<TypeB, int>::type>
     auto operator +( Observable<TypeA>& a, TypeB&& b )
