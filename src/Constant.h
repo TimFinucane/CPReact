@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Observable.h"
+#include "bindings/Observable.h"
 
 namespace react
 {

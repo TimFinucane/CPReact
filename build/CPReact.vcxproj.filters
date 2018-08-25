@@ -2,7 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClInclude Include="..\src\Reactive.h" />
-    <ClInclude Include="..\src\Observable.h" />
     <ClInclude Include="..\src\events\Event.h">
       <Filter>events</Filter>
     </ClInclude>
@@ -14,6 +13,9 @@
       <Filter>bindings</Filter>
     </ClInclude>
     <ClInclude Include="..\src\bindings\Binding.h">
+      <Filter>bindings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\bindings\Observable.h">
       <Filter>bindings</Filter>
     </ClInclude>
   </ItemGroup>

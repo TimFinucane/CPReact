@@ -103,11 +103,11 @@ TEST_CLASS( ReactiveTest )
 
     TEST_METHOD( simplePrettyBind )
     {
-        Constant<int> a = 2;
+        Constant<int> a = 3;
 
-        Reactive<int> copy = a;
+        Reactive<int> copy = a * a + 4;
 
         a = 4;
-        Assert::AreEqual( 4, copy() );
+        Assert::AreEqual( 20, copy() );
     }
 };

@@ -94,8 +94,8 @@ namespace react
         {
         }
 
-        template <typename... Inputs>
-        void reset( typename const RelationFunc<Inputs...>& binder, Observable<Inputs>&... inputs )
+        template <typename Functor, typename... Inputs>
+        void reset( Functor binder, Observable<Inputs>&... inputs )
         {
             response = [binder, &inputs...]() -> Out{ return binder( inputs.get()... ); };
             connections.reset( inputs... );

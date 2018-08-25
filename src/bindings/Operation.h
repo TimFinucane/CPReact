@@ -5,32 +5,10 @@
 #include <type_traits>
 #include <tuple>
 
+#include "Observable.h"
+
 namespace react
 {
-    template <typename Type>
-    class Bindable
-    {
-    public:
-        using reactive_type = Type;
-
-        /*
-        * Gets the value of the object as a constant (so it may not change)
-        */
-        virtual const Type& get() const = 0;
-    };
-
-    // Method of calling a functor with tupled types
-    template <typename Functor, typename TupleType, std::size_t ...I>
-    auto call( Functor& functor, TupleType& tuple, std::index_sequence<I...> )
-    {
-        return functor( std::get<I>( tuple ).get()... );
-    }
-    template <typename Functor, typename... Inputs>
-    auto call( Functor& functor, std::tuple<Inputs...>& tuple )
-    {
-        return call( functor, tuple, std::index_sequence_for<Inputs...>{} );
-    }
-
     // This has been put here as every place observable is used, this should be too
     // The operation results as listed here aren't actual results, but instead classes that contain functors capable of
     // producing a result. This allows operations to be chained together easily, as well as being converted into bindings.
@@ -78,28 +56,28 @@ namespace react
     }
 
     template <typename TypeA, typename TypeB, typename std::is_convertible<TypeB, int>::type>
-    auto operator +( Bindable<TypeA>& a, TypeB& b )
+    auto operator +( Observable<TypeA>& a, TypeB&& b )
     {
         return make_operation( std::move( [b]( const TypeA& valA ) { return valA + b; } ), a );
     }
     template <typename TypeA, typename TypeB, typename std::is_convertible<TypeB, int>::type>
-    auto operator -( Bindable<TypeA>& a, TypeB& b )
+    auto operator -( Observable<TypeA>& a, TypeB&& b )
     {
         return make_operation( std::move( [b]( const TypeA& valA ) { return valA - b; } ), a );
     }
     template <typename TypeA, typename TypeB, typename std::is_convertible<TypeB, int>::type>
-    auto operator *( Bindable<TypeA>& a, TypeB& b )
+    auto operator *( Observable<TypeA>& a, TypeB&& b )
     {
         return make_operation( std::move( [b]( const TypeA& valA ) { return valA * b; } ), a );
     }
     template <typename TypeA, typename TypeB, typename std::is_convertible<TypeB, int>::type>
-    auto operator /( Bindable<TypeA>& a, TypeB& b )
+    auto operator /( Observable<TypeA>& a, TypeB&& b )
     {
         return make_operation( std::move( [b]( const TypeA& valA ) { return valA / b; } ), a );
     }
 
     template <typename FunctorA, typename... InputsA, typename TypeB>
-    auto operator +( Operation<FunctorA, InputsA...>&& a, TypeB& b )
+    auto operator +( Operation<FunctorA, InputsA...>&& a, TypeB&& b )
     {
         FunctorA functorA( a.functor );
         // Copy over the functors into this functor. With any luck this will all be inlined.
@@ -110,7 +88,7 @@ namespace react
         );
     }
     template <typename FunctorA, typename... InputsA, typename TypeB>
-    auto operator -( Operation<FunctorA, InputsA...>&& a, TypeB& b )
+    auto operator -( Operation<FunctorA, InputsA...>&& a, TypeB&& b )
     {
         FunctorA functorA( a.functor );
         // Copy over the functors into this functor. With any luck this will all be inlined.
@@ -121,7 +99,7 @@ namespace react
         );
     }
     template <typename FunctorA, typename... InputsA, typename TypeB>
-    auto operator *( Operation<FunctorA, InputsA...>&& a, TypeB& b )
+    auto operator *( Operation<FunctorA, InputsA...>&& a, TypeB&& b )
     {
         FunctorA functorA( a.functor );
         // Copy over the functors into this functor. With any luck this will all be inlined.
@@ -132,7 +110,7 @@ namespace react
         );
     }
     template <typename FunctorA, typename... InputsA, typename TypeB>
-    auto operator /( Operation<FunctorA, InputsA...>&& a, TypeB& b )
+    auto operator /( Operation<FunctorA, InputsA...>&& a, TypeB&& b )
     {
         FunctorA functorA( a.functor );
         // Copy over the functors into this functor. With any luck this will all be inlined.
@@ -144,7 +122,7 @@ namespace react
     }
 
     template <typename TypeA, typename TypeB>
-    auto operator +( Bindable<TypeA>& a, Bindable<TypeB>& b )
+    auto operator +( Observable<TypeA>& a, Observable<TypeB>& b )
     {
         return make_operation(
             std::move( []( const TypeA& valA, const TypeB& valB ) { return valA + valB; } ),
@@ -152,7 +130,7 @@ namespace react
         );
     }
     template <typename TypeA, typename TypeB>
-    auto operator -( Bindable<TypeA>& a, Bindable<TypeB>& b )
+    auto operator -( Observable<TypeA>& a, Observable<TypeB>& b )
     {
         return make_operation(
             std::move( []( const TypeA& valA, const TypeB& valB ) { return valA - valB; } ),
@@ -160,7 +138,7 @@ namespace react
         );
     }
     template <typename TypeA, typename TypeB>
-    auto operator *( Bindable<TypeA>& a, Bindable<TypeB>& b )
+    auto operator *( Observable<TypeA>& a, Observable<TypeB>& b )
     {
         return make_operation(
             std::move( []( const TypeA& valA, const TypeB& valB ) { return valA * valB; } ),
@@ -168,7 +146,7 @@ namespace react
         );
     }
     template <typename TypeA, typename TypeB>
-    auto operator /( Bindable<TypeA>& a, Bindable<TypeB>& b )
+    auto operator /( Observable<TypeA>& a, Observable<TypeB>& b )
     {
         return make_operation(
             std::move( []( const TypeA& valA, const TypeB& valB ) { return valA / valB; } ),
@@ -177,7 +155,7 @@ namespace react
     }
 
     template <typename FunctorA, typename... InputsA, typename TypeB>
-    auto operator +( Operation<FunctorA, InputsA...>&& a, Bindable<TypeB>& b )
+    auto operator +( Operation<FunctorA, InputsA...>&& a, Observable<TypeB>& b )
     {
         FunctorA functorA( a.functor );
         // Copy over the functors into this functor. With any luck this will all be inlined.
@@ -188,7 +166,7 @@ namespace react
         );
     }
     template <typename FunctorA, typename... InputsA, typename TypeB>
-    auto operator -( Operation<FunctorA, InputsA...>&& a, Bindable<TypeB>& b )
+    auto operator -( Operation<FunctorA, InputsA...>&& a, Observable<TypeB>& b )
     {
         FunctorA functorA( a.functor );
         // Copy over the functors into this functor. With any luck this will all be inlined.
@@ -199,7 +177,7 @@ namespace react
         );
     }
     template <typename FunctorA, typename... InputsA, typename TypeB>
-    auto operator *( Operation<FunctorA, InputsA...>&& a, Bindable<TypeB>& b )
+    auto operator *( Operation<FunctorA, InputsA...>&& a, Observable<TypeB>& b )
     {
         FunctorA functorA( a.functor );
         // Copy over the functors into this functor. With any luck this will all be inlined.
@@ -210,7 +188,7 @@ namespace react
         );
     }
     template <typename FunctorA, typename... InputsA, typename TypeB>
-    auto operator /( Operation<FunctorA, InputsA...>&& a, Bindable<TypeB>& b )
+    auto operator /( Operation<FunctorA, InputsA...>&& a, Observable<TypeB>& b )
     {
         FunctorA functorA( a.functor );
         // Copy over the functors into this functor. With any luck this will all be inlined.
@@ -222,7 +200,7 @@ namespace react
     }
 
     template <typename TypeA, typename FunctorB, typename... InputsB>
-    auto operator +( Bindable<TypeA>& a, Operation<FunctorB, InputsB...>&& b )
+    auto operator +( Observable<TypeA>& a, Operation<FunctorB, InputsB...>&& b )
     {
         FunctorB functorB( b.functor );
         // Copy over the functors into this functor. With any luck this will all be inlined.
@@ -233,7 +211,7 @@ namespace react
         );
     }
     template <typename TypeA, typename FunctorB, typename... InputsB>
-    auto operator -( Bindable<TypeA>& a, Operation<FunctorB, InputsB...>&& b )
+    auto operator -( Observable<TypeA>& a, Operation<FunctorB, InputsB...>&& b )
     {
         FunctorB functorB( b.functor );
         // Copy over the functors into this functor. With any luck this will all be inlined.
@@ -244,7 +222,7 @@ namespace react
         );
     }
     template <typename TypeA, typename FunctorB, typename... InputsB>
-    auto operator *( Bindable<TypeA>& a, Operation<FunctorB, InputsB...>&& b )
+    auto operator *( Observable<TypeA>& a, Operation<FunctorB, InputsB...>&& b )
     {
         FunctorB functorB( b.functor );
         // Copy over the functors into this functor. With any luck this will all be inlined.
@@ -255,7 +233,7 @@ namespace react
         );
     }
     template <typename TypeA, typename FunctorB, typename... InputsB>
-    auto operator /( Bindable<TypeA>& a, Operation<FunctorB, InputsB...>&& b )
+    auto operator /( Observable<TypeA>& a, Operation<FunctorB, InputsB...>&& b )
     {
         FunctorB functorB( b.functor );
         // Copy over the functors into this functor. With any luck this will all be inlined.

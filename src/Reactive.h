@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Observable.h"
+#include "bindings/Observable.h"
+#include "bindings/Operation.h"
 #include "bindings/Binding.h"
 
 namespace react
@@ -40,6 +41,13 @@ namespace react
         {
             bind( []( SimilarType input ) { return (Type)input; }, observable );
         }
+        template <typename Functor, typename... Inputs>
+        Reactive( Operation<Functor, Inputs...>&& operation )
+            : Reactive()
+        {
+            std::tuple<Inputs&...> in_tuple = std::move( operation.inputs );
+            bind_from_tuple( std::move( operation.functor ), in_tuple );
+        }
         ~Reactive()
         {
             binding.clear();
@@ -49,12 +57,17 @@ namespace react
          * Sets the reactive's value to be the aggregate of one or more observables. The reactive keeps this
          * reaction.
          */
-        template <typename... Inputs>
-        void    bind( typename const Binding<Type>::RelationFunc<Inputs...>& binder, Observable<Inputs>&... inputs )
+        template <typename Functor, typename... Inputs>
+        void    bind( Functor&& binder, Observable<Inputs>&... inputs )
         {
-            binding.reset( binder, inputs... );
-
+            binding.reset( std::move(binder), inputs... );
             valid = false;
+        }
+        // Alternative binding to tuple
+        template <typename Functor, typename... Inputs>
+        void bind_from_tuple( Functor&& binder, const std::tuple<Inputs&...>& tuple )
+        {
+            bind_from_tuple_indices( std::move( binder ), tuple, std::index_sequence_for<Inputs...>{} );
         }
 
         /*
@@ -100,6 +113,12 @@ namespace react
         //using Observable::operator const Type &;
 
     private:
+        template <typename Functor, typename TupleType, std::size_t... I>
+        void bind_from_tuple_indices( Functor&& binder, const TupleType& tuple, std::index_sequence<I...> )
+        {
+            bind( std::move( binder ), std::get<I>( tuple )... );
+        }
+
         void    update()
         {
             // This way we retain the old value, but ensure the new value is

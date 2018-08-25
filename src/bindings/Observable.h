@@ -3,7 +3,6 @@
 #include <vector>
 
 #include "events/Event.h"
-#include "bindings/Operation.h"
 
 namespace react
 {
@@ -16,13 +15,15 @@ namespace react
      * no functionality for setting that value.
      */
     template <typename Type>
-    class Observable : public Bindable<Type>
+    class Observable
     {
     private:
         using ValueNotifier = events::EventNotifier<Type, Type>;
 
     public:
+        using reactive_type = Type;
 
+    public:
         /*
          * Sets the object to the new value and sends notifications
          */
@@ -55,6 +56,11 @@ namespace react
             return valueChange.add( callback, disconnector );
         }
 
+        /*
+         * Gets the value of the object as a constant (so it may not change)
+         */
+        virtual const Type& get() const = 0;
+
     protected:
         /*
          * Informs of an updated value
@@ -71,4 +77,16 @@ namespace react
         ChangeNotifier  change;
         ValueNotifier   valueChange;
     };
+
+    // Method of calling a functor with tupled types
+    template <typename Functor, typename TupleType, std::size_t ...I>
+    auto call( Functor& functor, TupleType& tuple, std::index_sequence<I...> )
+    {
+        return functor( std::get<I>( tuple ).get()... );
+    }
+    template <typename Functor, typename... Inputs>
+    auto call( Functor& functor, std::tuple<Inputs...>& tuple )
+    {
+        return call( functor, tuple, std::index_sequence_for<Inputs...>{} );
+    }
 }
