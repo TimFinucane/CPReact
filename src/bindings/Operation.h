@@ -34,11 +34,6 @@ namespace react
             return get();
         }
 
-        operator typename reactive_type()
-        {
-            return this->operator ()();
-        }
-
         Functor                     functor;
         std::tuple<Inputs&...>      inputs;
     };

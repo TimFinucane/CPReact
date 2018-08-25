@@ -107,7 +107,7 @@ TEST_CLASS( ReactiveTest )
     {
         Constant<int> a = 3;
 
-        Reactive<int> copy = a * a + 4;
+        Reactive<int> copy{ a * a + 4 };
 
         a = 4;
         Assert::AreEqual( 20, copy() );
@@ -118,9 +118,9 @@ TEST_CLASS( ReactiveTest )
         Constant<int> a = 1;
         Constant<int> b = 1;
 
-        Reactive<int> hypot_squared = a * a + b * b;
+        Reactive<int> hypot_squared{ a * a + b * b };
 
-        Reactive<float> cosine = b / Operation{ &std::sqrtf, hypot_squared };
+        Reactive<float> cosine{ b / Operation{ &std::sqrtf, hypot_squared } };
 
         a = 3;
         b = 4;

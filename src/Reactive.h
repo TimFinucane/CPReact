@@ -42,7 +42,7 @@ namespace react
             bind( []( SimilarType input ) { return (Type)input; }, observable );
         }
         template <typename Functor, typename... Inputs>
-        Reactive( Operation<Functor, Inputs...>&& operation )
+        explicit Reactive( Operation<Functor, Inputs...>&& operation )
             : Reactive()
         {
             std::tuple<Inputs&...> in_tuple = std::move( operation.inputs );
