@@ -48,28 +48,35 @@ namespace react
         // Adds each of the tuple of observables to the list of listeners, whilst ensuring that no observable is listened to more
         // than once (no repetition).
         template <size_t item = 0, typename... Inputs>
-        std::enable_if_t<item < sizeof...(Inputs)> bindListeners( std::tuple<Observable<Inputs>&...>& observables )
+        void bindListeners( std::tuple<Observable<Inputs>&...>& observables )
         {
-            if( item == 0 || !existsInTuple<item, item - 1, Inputs...>( observables ) )
+            #pragma warning(suppress: 4127) // This compiler warning is incorrect, following is not constexpr (and will not compile if changed).
+            if( item == 0 || !existsInTuple<item, Inputs...>( observables ) )
                 connections.emplace_back( std::get<item>( observables ).addListener( onChange, [&](){ clear(); } ) );
 
-            bindListeners<item + 1, Inputs...>( observables );
+            if constexpr( item + 1 < sizeof...(Inputs) )
+                bindListeners<item + 1, Inputs...>( observables );
         }
-        template <size_t item, typename... Inputs>
-        std::enable_if_t<item == sizeof...(Inputs)> bindListeners( std::tuple<Observable<Inputs>&...>& ) {}
-        
+
         // Used for checking if an item exists already in the given tuple
         template <size_t item, size_t otherItem, typename... Inputs>
-        std::enable_if_t<otherItem != 0, bool> existsInTuple( std::tuple<Observable<Inputs>&...>& observables )
+        static bool existsInTuple( const std::tuple<Observable<Inputs>&...>& observables )
         {
             if( &std::get<item>( observables ) == &std::get<otherItem>( observables ) )
                 return true;
-            return existsInTuple<item, otherItem - 1, Inputs...>( observables );
-        }
-        template <size_t item, size_t otherItem, typename... Inputs>
-        std::enable_if_t<otherItem == 0, bool> existsInTuple( std::tuple<Observable<Inputs>&...>& )
-        {
+
+            if constexpr( otherItem > 0 )
+                return existsInTuple<item, otherItem - 1, Inputs...>( observables );
+
             return false;
+        }
+        template <size_t item, typename... Inputs>
+        static bool existsInTuple( const std::tuple<Observable<Inputs>&...>& observables )
+        {
+            if constexpr( item == 0 )
+                return false;
+
+            return existsInTuple<item, item - 1, Inputs...>( observables );
         }
 
         std::vector<Connection> connections;
