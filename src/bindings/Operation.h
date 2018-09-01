@@ -13,7 +13,7 @@ namespace react
     // The operation results as listed here aren't actual results, but instead classes that contain functors capable of
     // producing a result. This allows operations to be chained together easily, as well as being converted into bindings.
     template <typename Functor, typename... Inputs>
-    class Operation // Breaks if I try to extend from bindable
+    class Operation
     {
     public:
         using reactive_type = std::invoke_result_t<Functor, typename Inputs::reactive_type...>;
@@ -48,14 +48,6 @@ namespace react
     auto make_operation( Functor&& functor, std::tuple<Inputs&...>&& inputs )
     {
         return Operation<Functor, Inputs...>( std::move( functor ), std::move( inputs ) );
-    }
-    /*
-     * Joins a tuple and another item or tuple together uniquely (results in unique tuple)
-     */
-    template <typename... Inputs, typename Input>
-    auto join_tuples( std::tuple<Inputs&...> tuple, Input& other )
-    {
-
     }
 
     template <typename TypeA, typename TypeB, typename std::is_convertible<TypeB, int>::type>

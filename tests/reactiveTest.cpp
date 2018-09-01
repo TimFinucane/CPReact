@@ -115,17 +115,17 @@ TEST_CLASS( ReactiveTest )
 
     TEST_METHOD( complexPrettyBind )
     {
-        Constant<int> a = 1;
-        Constant<int> b = 1;
+        Constant a = 1.0f;
+        Constant b = 1.0f;
 
-        Reactive<int> hypot_squared{ a * a + b * b };
+        Reactive<float> hypot_squared{ a * a + b * b };
 
         Reactive<float> cosine{ b / Operation{ &std::sqrtf, hypot_squared } };
 
-        a = 3;
-        b = 4;
+        a = 3.0f;
+        b = 4.0f;
 
-        Assert::AreEqual( 5 * 5, hypot_squared() );
+        Assert::AreEqual( 25.0f, hypot_squared.get() );
         Assert::AreEqual( 0.8f, cosine() ); // Should even be exact precision. How lovely.
     }
 };
