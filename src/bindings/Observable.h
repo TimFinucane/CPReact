@@ -38,22 +38,19 @@ namespace react
         {
             return get();
         }
-
-        /*explicit operator const Type&()
-        {
-            return get();
-        }
-        */
+        
         /*
          * Read EventNotifier::add to see more
          */
-        auto    addListener( const typename ChangeNotifier::ListenerType::Callback& callback, events::Disconnecter disconnector = {} )
+        template <typename Callback, typename = std::invoke_result_t<typename Callback>>
+        ChangeNotifier::ConnectionInfo addListener( Callback&& callback, events::Disconnecter disconnector = {} )
         {
-            return change.add( callback, disconnector );
+            return change.add( std::forward<Callback>( callback ), disconnector );
         }
-        auto    addListener( const typename ValueNotifier::ListenerType::Callback& callback, events::Disconnecter disconnector = {} )
+        template <typename Callback, typename = std::invoke_result_t<typename Callback, typename Type, typename Type>>
+        typename ValueNotifier::ConnectionInfo addListener( Callback&& callback, events::Disconnecter disconnector = {} )
         {
-            return valueChange.add( callback, disconnector );
+            return valueChange.add( std::forward<Callback>( callback ), disconnector );
         }
 
         /*
