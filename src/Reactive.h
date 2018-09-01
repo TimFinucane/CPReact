@@ -141,4 +141,7 @@ namespace react
         mutable bool        valid = true;
         mutable Type        value;
     };
+
+    template <typename Functor, typename... Inputs>
+    Reactive( Operation<Functor, Inputs...>&& operation )->Reactive<typename Operation<Functor, Inputs...>::reactive_type>;
 }

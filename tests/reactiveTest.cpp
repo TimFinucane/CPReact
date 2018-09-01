@@ -118,9 +118,9 @@ TEST_CLASS( ReactiveTest )
         Constant a = 1.0f;
         Constant b = 1.0f;
 
-        Reactive<float> hypot_squared{ a * a + b * b };
+        Reactive hypot_squared{ a * a + b * b };
 
-        Reactive<float> cosine{ b / Operation{ &std::sqrtf, hypot_squared } };
+        Reactive cosine{ b / Operation{ &std::sqrtf, hypot_squared } };
 
         a = 3.0f;
         b = 4.0f;
