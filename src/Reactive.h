@@ -121,8 +121,11 @@ namespace react
 
         void    update()
         {
+            if(valid || !binding)
+                return;
+
             // This way we retain the old value, but ensure the new value is
-            // contained in the class
+            // contained in the class           
             Type temp = binding();
             std::swap( value, temp );
 

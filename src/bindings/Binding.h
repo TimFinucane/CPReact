@@ -22,10 +22,6 @@ namespace react
         ConnectionArray()
             : ConnectionArray( {}, {} )
         {}
-        ~ConnectionArray()
-        {
-            clear();
-        }
 
         ConnectionArray( ConnectionArray&& m ) = delete;
         ConnectionArray& operator =( ConnectionArray&& m ) = delete;
@@ -34,14 +30,15 @@ namespace react
         void reset( std::tuple<Observable<Args>&...>& listenables )
         {
             clear();
-            clear();
             bindListeners<0, Args...>( listenables );
         }
         void clear()
         {
+            onClose();
             connections.clear();
         }
 
+    private:
         std::function<ChangeObserver>   onChange;
         std::function<void()>           onClose; // From what i understand, these functions are allowed to destroy themselves
     private:
@@ -99,16 +96,16 @@ namespace react
         using RelationFunc = typename identity<std::function<Out( const Inputs&... )>>::type;
     public:
         Binding( const std::function<ChangeObserver>& onChange, const std::function<void()>& onClose = {} )
-            : connections( onChange, onClose )
+            : connections(onChange, [this, onClose]() { onClose(); response = {}; })
         {
         }
 
         template <typename Functor, typename... Inputs>
         void reset( Functor binder, Observable<Inputs>&... inputs )
         {
-            response = [binder, &inputs...]() -> Out{ return binder( inputs.get()... ); };
             auto tuple = std::forward_as_tuple<Observable<Inputs>&...>( inputs... );
             connections.reset<Inputs...>( tuple );
+            response = [binder, &inputs...]()->Out{ return binder(inputs.get()...); };
         }
         void reset()
         {
