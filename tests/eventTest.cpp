@@ -16,42 +16,43 @@ public:
 
     TEST_METHOD( addWithCloser )
     {
-        bool closed = false;
+        bool severed = false;
 
         {
             EventNotifier<> notifier;
 
-            notifier.add( [](){}, [&](){ closed = true; } );
+            notifier.add( [](){}, [&](){ severed = true; } );
 
-            Assert::IsFalse( closed );
+            Assert::IsFalse( severed );
         }
 
-        Assert::IsTrue( closed );
+        Assert::IsTrue( severed );
     }
 
     TEST_METHOD( removeWithCloser )
     {
-        bool closed = false;
+        bool severed = false;
+        {
+            EventNotifier<> notifier;
+            auto con = notifier.add([]() {}, [&]() { severed = true; });
 
-        EventNotifier<> notifier;
-        auto con = notifier.add( [](){}, [&](){ closed = true; } );
-
-        con.close();
-
-        Assert::IsTrue( closed );
+            con.close();
+        }
+        Assert::IsFalse( severed );
     }
 
     TEST_METHOD( autoCloser )
     {
-        bool closed = false;
-
-        EventNotifier<> notifier;
+        bool severed = false;
 
         {
-            AutoConnection<> con = notifier.add( [](){}, [&](){ closed = true; } );
+            EventNotifier<> notifier;
+            {
+                AutoConnection<> con = notifier.add([]() {}, [&]() { severed = true; });
+            }
         }
 
-        Assert::IsTrue( closed );
+        Assert::IsFalse(severed);
     }
 
     TEST_METHOD( notifyWithRemoves )
@@ -75,22 +76,5 @@ public:
         notifier.notify();
 
         Assert::AreEqual( 8, a );
-    }
-
-    TEST_METHOD( earlyClose )
-    {
-        int closed = 0;
-
-        EventNotifier<> notifier;
-
-        {
-            AutoConnection<> con = notifier.add( [](){}, [&](){ closed++; } );
-
-            con.close();
-
-            Assert::AreEqual( 1, closed );
-        }
-
-        Assert::AreEqual( 1, closed ); // Ensure doesnt close twice
     }
 };

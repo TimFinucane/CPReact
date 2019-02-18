@@ -18,19 +18,19 @@ namespace react::events
         using Callback = std::function<void( Args... )>;
 
     public:
-        Listener( const Callback& callback, std::function<void()> disconnecter = {} )
-            : callback( callback ), disconnecter( std::forward<Disconnecter>( disconnecter ) )
+        Listener( const Callback& callback, std::function<void()> onSever = {} )
+            : callback( callback ), onSever( std::forward<Disconnecter>(onSever) )
         {
         }
-        Listener( Callback&& callback, std::function<void()> disconnecter = {} )
+        Listener( Callback&& callback, std::function<void()> onSever = {} )
             : callback( std::forward<Callback>( callback ) ),
-            disconnecter( std::forward<Disconnecter>( disconnecter ) )
+            onSever( std::forward<Disconnecter>(onSever) )
         {
         }
         ~Listener()
         {
-            if( disconnecter )
-                disconnecter();
+            if(onSever)
+                onSever();
         }
 
         /*
@@ -50,8 +50,14 @@ namespace react::events
             callback( std::forward<ForwardReferencingArgs>( args )... );
         }
 
+        // Cleanly closes the listener to prevent a sever call
+        void    close()
+        {
+            onSever = {};
+        }
+
     private:
         Callback        callback;
-        Disconnecter    disconnecter;
+        Disconnecter    onSever;
     };
 }

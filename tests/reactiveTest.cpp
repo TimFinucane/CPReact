@@ -19,7 +19,7 @@ TEST_CLASS( ReactiveTest )
     }
 
     TEST_METHOD( bindingPrematureDeletion )
-    { // :) I made this work :)
+    {
         Observable<int>* a = new Constant<int>{ 2 };
 
         Reactive<int> copy;
@@ -83,6 +83,17 @@ TEST_CLASS( ReactiveTest )
         Assert::AreEqual( 7, c.get() );
     }
 
+    TEST_METHOD( multipleBinds )
+    {
+        Reactive<int> a = 2;
+        Reactive<int> b = 3;
+
+        Reactive<int> c;
+        c.bind([](int first, int second) { return first + second; }, a, b);
+
+        Assert::AreEqual(5, c());
+    }
+
     TEST_METHOD( tryChangeBound )
     {
         Reactive<int> a = 2;
@@ -94,13 +105,13 @@ TEST_CLASS( ReactiveTest )
         try
         {
             c = 4;
+            Assert::Fail(L"AssignmentToBoundException was not thrown when assigning to a bound variable");
         }
         catch ( react::AlreadyBoundException& )
         {
             Assert::AreEqual( 5, c() );
             return;
         }
-        Assert::Fail( L"AssignmentToBoundException was not thrown when assigning to a bound variable" );
     }
 
     TEST_METHOD( simplePrettyBind )

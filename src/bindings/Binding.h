@@ -26,6 +26,7 @@ namespace react
         ConnectionArray( ConnectionArray&& m ) = delete;
         ConnectionArray& operator =( ConnectionArray&& m ) = delete;
 
+        // TODO: Add initial form of this method to call when no initial deletion needs to occur (no clear())
         template <typename... Args>
         void reset( std::tuple<Observable<Args>&...>& listenables )
         {
@@ -100,6 +101,7 @@ namespace react
         {
         }
 
+        // TODO: Add initial form of this method to call when no initial deletion needs to occur
         template <typename Functor, typename... Inputs>
         void reset( Functor binder, Observable<Inputs>&... inputs )
         {

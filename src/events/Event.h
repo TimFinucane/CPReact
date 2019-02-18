@@ -7,7 +7,7 @@
 namespace react::events
 {
     /*
-     * Allows multiple connections to be attached and be signalled
+     * Allows multiple connections to be attached and be signaled
      */
     template <typename... Args>
     class EventNotifier
@@ -31,16 +31,8 @@ namespace react::events
             {
                 if( !ptr.expired() )
                 {
-                    for( auto it = origin.list.begin(), end = origin.list.end(); it != end; it++  )
-                    {
-                        if( !ptr.owner_before( *it ) && !(*it).owner_before( ptr ) )
-                        {
-                            // Swap and pop
-                            std::iter_swap( it, origin.list.end() - 1 );
-                            origin.list.pop_back();
-                            break;
-                        }
-                    }
+                    // TODO: What if the event notifier is moved?
+                    origin.close(ptr);
                 }
                 // ptr should be expired here
             }
@@ -57,6 +49,20 @@ namespace react::events
         ConnectionInfo  add( MethodArgs&&... args )
         {
             return ConnectionInfo( *this, list.emplace_back( std::make_shared<ListenerType>( std::forward<MethodArgs>( args )... ) ) );
+        }
+
+        void            close(std::weak_ptr<ListenerType>& listener)
+        {
+            for(auto it = list.begin(), end = list.end(); it != end; it++) {
+                if(!listener.owner_before(*it) && !(*it).owner_before(listener)) {
+                    // Swap and pop
+                    std::iter_swap(it, list.end() - 1);
+
+                    list.back()->close();
+                    list.pop_back();
+                    break;
+                }
+            }
         }
 
         template <typename... MethodArgsUsedForForwardingReference>
